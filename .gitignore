@@ -7,3 +7,7 @@
 /build
 /captures
 .externalNativeBuild
+# Dropbox settings and caches
+.dropbox
+.dropbox.attr
+.dropbox.cache
