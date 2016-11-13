@@ -18,8 +18,6 @@ import com.letit0or1.androidworldhistorytracker.R;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private Button getPos;
-    private TextView lanLn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,14 +28,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        getPos = (Button) findViewById(R.id.button2);
-        lanLn = (TextView) findViewById(R.id.ln);
-        getPos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                lanLn.setText(mMap.getCameraPosition().target.latitude + ":" + mMap.getCameraPosition().target.longitude);
-            }
-        });
+
     }
 
 
