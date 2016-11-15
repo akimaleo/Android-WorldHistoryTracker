@@ -13,22 +13,16 @@ import retrofit2.Call;
  */
 
 public class EventService {
-    public Call<ArrayList<Event>> getById(int id, String token) {
+
+    public Call<ArrayList<Event>> getByUserId(int id, String token) {
         EventApi eApi = ServicesFactory.getRetrofit().create(EventApi.class);
-//        String locale = Resources.getSystem().getConfiguration().locale.toString();
         Call<ArrayList<Event>> call = eApi.userEvents(id, token);
         return call;
     }
 
-    public boolean add(Event e) {
+    public Call<Boolean> add(Event e) {
         EventApi eApi = ServicesFactory.getRetrofit().create(EventApi.class);
-        try {
-            eApi.add(e);
-            return true;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
+        return eApi.add(e);
     }
 
 }

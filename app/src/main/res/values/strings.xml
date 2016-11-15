@@ -16,4 +16,10 @@
     <string name="title_activity_maps">Map</string>
     <string name="server_url">0.0.0.0</string>
     <string name="server_port">4565</string>
+
+    <!--Reg info-->
+    <string name="reg_info">You aren`t user of WHT, do you want to use these data for registration?</string>
+    <string name="some_trouble">Try again later</string>
+    <string name="got_it">Got it</string>
+
 </resources>

@@ -20,5 +20,5 @@ public interface EventApi {
     Call<ArrayList<Event>> userEvents(@Path("id") int id, @Body String token);
 
     @POST("/event/add/")
-    void add(@Body Event e);
+    Call<Boolean> add(@Body Event e);
 }

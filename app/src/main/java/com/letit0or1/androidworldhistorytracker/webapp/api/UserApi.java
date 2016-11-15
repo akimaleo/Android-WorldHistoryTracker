@@ -18,8 +18,8 @@ public interface UserApi {
     Call<User> getById(@Path("id") int id);
 
     @POST("/user/authorization/")
-    Call<User> authorization(@Body User user);
+    Call<String> authorization(@Body User user);
 
     @POST("/user/registration/")
-    Call<User> registration(@Body User user);
+    Call<String> registration(@Body User user);
 }

@@ -31,7 +31,7 @@ public class ServicesFactory {
         b.writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS);
         b.readTimeout(READ_TIMEOUT, TimeUnit.SECONDS);
         CLIENT = b.build();
-        URL = "http://" + Resources.getSystem().getString(R.string.server_url) + ":" + Resources.getSystem().getString(R.string.server_port);
+//        URL = "http://" + Resources.getSystem().getString(R.string.server_url) + ":" + Resources.getSystem().getString(R.string.server_port);
     }
 
     public static ServicesFactory getInstance() {
@@ -66,7 +66,7 @@ public class ServicesFactory {
     }
 
     @NonNull
-    public EventService getOrganizationService() {
+    public EventService getEventService() {
         return new EventService();
     }
 }
