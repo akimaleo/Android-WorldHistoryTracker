@@ -28,12 +28,20 @@ public class Event {
     @DatabaseField
     private Timestamp dateTime;
 
+
     public Event() {
     }
 
     public Event(int id, int user_id, String content, double latitude, double longitude, Timestamp dateTime) {
         this.id = id;
         this.user_id = user_id;
+        this.content = content;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.dateTime = dateTime;
+    }
+
+    public Event(String content, double latitude, double longitude, Timestamp dateTime) {
         this.content = content;
         this.latitude = latitude;
         this.longitude = longitude;

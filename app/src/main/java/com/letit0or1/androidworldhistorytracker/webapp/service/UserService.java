@@ -2,6 +2,7 @@ package com.letit0or1.androidworldhistorytracker.webapp.service;
 
 import com.letit0or1.androidworldhistorytracker.entity.Event;
 import com.letit0or1.androidworldhistorytracker.entity.User;
+import com.letit0or1.androidworldhistorytracker.entity.UserDto;
 import com.letit0or1.androidworldhistorytracker.webapp.api.EventApi;
 import com.letit0or1.androidworldhistorytracker.webapp.api.UserApi;
 import com.letit0or1.androidworldhistorytracker.webapp.factory.ServicesFactory;
@@ -16,14 +17,14 @@ import retrofit2.Call;
 
 public class UserService {
 
-    public Call<String> authorization(User u) {
+    public Call<Void> authorization(UserDto u) {
         UserApi eApi = ServicesFactory.getRetrofit().create(UserApi.class);
-        Call<String> call = eApi.authorization(u);
+        Call<Void> call = eApi.authorization(u);
         return call;
     }
 
 
-    public Call<String> registration(User u) {
+    public Call<Void> registration(UserDto u) {
         UserApi eApi = ServicesFactory.getRetrofit().create(UserApi.class);
         return eApi.registration(u);
     }

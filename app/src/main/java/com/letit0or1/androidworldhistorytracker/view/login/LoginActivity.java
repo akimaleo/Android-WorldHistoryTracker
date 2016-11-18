@@ -2,6 +2,7 @@ package com.letit0or1.androidworldhistorytracker.view.login;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
@@ -12,9 +13,11 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.letit0or1.androidworldhistorytracker.R;
 import com.letit0or1.androidworldhistorytracker.entity.User;
+import com.letit0or1.androidworldhistorytracker.entity.UserDto;
 import com.letit0or1.androidworldhistorytracker.view.main.MapListViewHolder;
 import com.letit0or1.androidworldhistorytracker.webapp.factory.ServicesFactory;
 
@@ -59,46 +62,53 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void doLogin() {
-        Intent intent = new Intent(LoginActivity.this, MapListViewHolder.class);
-startActivity(intent);
-//        progressBar.setVisibility(View.VISIBLE);
-//        User loginUser = new User(usernameField.getText().toString(), passwordField.getText().toString());
-//        ServicesFactory.getInstance().getUserService().authorization(loginUser).enqueue(new Callback<String>() {
-//            @Override
-//            public void onResponse(Call<String> call, Response<String> response) {
-//                Log.i("RESPONSE", "OK");
-//                if (response.body().contains("404")) {
-//                    new RegisterDialog(LoginActivity.this).show();
-//                }
-//
-////                        progressBar.setVisibility(View.GONE);
-//            }
-//
-//            @Override
-//            public void onFailure(Call<String> call, Throwable t) {
-//                Log.i("RESPONSE", "FAIL");
-//                progressBar.setVisibility(View.GONE);
-//                troubleDialog();
-//            }
-//        });
+//        Intent intent = new Intent(LoginActivity.this, MapListViewHolder.class);
+//        startActivity(intent);
+        if (usernameField.getText().length() < 1 || passwordField.getText().length() < 1) {
+            Toast.makeText(getApplicationContext(), "Some fields are empty, write something", Toast.LENGTH_LONG).show();
+            return;
+        }
+        progressBar.setVisibility(View.VISIBLE);
+        UserDto loginUser = new UserDto(usernameField.getText().toString(), passwordField.getText().toString());
+        ServicesFactory.getInstance().getUserService().authorization(loginUser).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.i("RESPONSE", "OK");
+                String head = response.headers().get("authorization");
+
+                if (response.headers().get("authorization").contains("NULL"))
+                    new RegisterDialog(LoginActivity.this).show();
+                else
+                    Toast.makeText(getApplicationContext(), response.headers().get("authorization"), Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.i("RESPONSE", "FAIL");
+                progressBar.setVisibility(View.GONE);
+                troubleDialog();
+            }
+        });
     }
 
     public void doRegister() {
 
         progressBar.setVisibility(View.VISIBLE);
-        User loginUser = new User(usernameField.getText().toString(), passwordField.getText().toString());
-        ServicesFactory.getInstance().getUserService().registration(loginUser).enqueue(new Callback<String>() {
+        UserDto loginUser = new UserDto(usernameField.getText().toString(), passwordField.getText().toString());
+        ServicesFactory.getInstance().getUserService().registration(loginUser).enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-                Log.i("RESPONSE", "OK");
-                new RegisterDialog(LoginActivity.this).show();
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                String head = response.headers().get("authorization");
 
+                Log.i("RESPONSE", head);
+
+                Toast.makeText(getApplicationContext(), head, Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(LoginActivity.this, MapListViewHolder.class);
                 startActivity(intent);
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable t) {
+            public void onFailure(Call<Void> call, Throwable t) {
                 Log.i("RESPONSE", "FAIL");
                 new RegisterDialog(LoginActivity.this).show();
                 progressBar.setVisibility(View.GONE);
@@ -121,6 +131,23 @@ startActivity(intent);
 
     public void cancelApp() {
         finish();
+    }
+
+    public ProgressBar getProgressBar() {
+        return progressBar;
+    }
+
+    void saveToken(String text) {
+        SharedPreferences sPref = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.putString("token", text);
+        ed.commit();
+    }
+
+    String loadToken() {
+        SharedPreferences sPref = getPreferences(MODE_PRIVATE);
+        String savedText = sPref.getString("token", "");
+        return savedText;
     }
 }
 

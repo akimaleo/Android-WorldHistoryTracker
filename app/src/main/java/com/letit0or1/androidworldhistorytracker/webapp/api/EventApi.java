@@ -1,6 +1,8 @@
 package com.letit0or1.androidworldhistorytracker.webapp.api;
 
 import com.letit0or1.androidworldhistorytracker.entity.Event;
+import com.letit0or1.androidworldhistorytracker.entity.EventDto;
+import com.letit0or1.androidworldhistorytracker.entity.EventSearchDto;
 
 import java.util.ArrayList;
 
@@ -17,8 +19,11 @@ import retrofit2.http.Path;
 public interface EventApi {
 
     @GET("/user/{id}/events/")
-    Call<ArrayList<Event>> userEvents(@Path("id") int id, @Body String token);
+    Call<ArrayList<Event>> userEvents(@Body String token);
+
+    @GET("/events/")
+    Call<ArrayList<Event>> eventsByParams(@Body EventSearchDto e);
 
     @POST("/event/add/")
-    Call<Boolean> add(@Body Event e);
+    Call<Void> add(@Body EventDto e);
 }

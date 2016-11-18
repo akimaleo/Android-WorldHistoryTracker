@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.letit0or1.androidworldhistorytracker.R;
+import com.letit0or1.androidworldhistorytracker.entity.Event;
+
+import java.util.ArrayList;
 
 /**
  * Created by akimaleo on 15.11.16.
@@ -14,12 +17,12 @@ import com.letit0or1.androidworldhistorytracker.R;
 
 public class EventsListAdapter extends RecyclerView.Adapter<EventsListAdapter.ViewHolder> {
 
-    private String[] mDataset;
+    private ArrayList<Event> mDataset;
 
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public EventsListAdapter(String[] myDataset) {
-        mDataset = myDataset;
+    public EventsListAdapter(ArrayList<Event> mDataset) {
+        this.mDataset = mDataset;
     }
 
     // Create new views (invoked by the layout manager)
@@ -39,14 +42,15 @@ public class EventsListAdapter extends RecyclerView.Adapter<EventsListAdapter.Vi
     public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.mTextView.setText(mDataset[position]);
+        holder.mTextDescription.setText(mDataset.get(position).getContent());
+        holder.mTextTime.setText(mDataset.get(position).getDateTime().toString());
 
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataset.length;
+        return mDataset.size();
     }
 
     // Provide a reference to the views for each data item
@@ -54,11 +58,13 @@ public class EventsListAdapter extends RecyclerView.Adapter<EventsListAdapter.Vi
     // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
-        public TextView mTextView;
+        public TextView mTextDescription;
+        public TextView mTextTime;
 
         public ViewHolder(View v) {
             super(v);
-            mTextView = (TextView) v.findViewById(R.id.eventDescription);
+            mTextDescription = (TextView) v.findViewById(R.id.event_description);
+            mTextTime = (TextView) v.findViewById(R.id.time_text);
         }
     }
 }

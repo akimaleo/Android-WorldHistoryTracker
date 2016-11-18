@@ -1,6 +1,7 @@
 package com.letit0or1.androidworldhistorytracker.webapp.api;
 
 import com.letit0or1.androidworldhistorytracker.entity.User;
+import com.letit0or1.androidworldhistorytracker.entity.UserDto;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -13,13 +14,9 @@ import retrofit2.http.Path;
  */
 
 public interface UserApi {
+    @POST("/user/auth/")
+    Call<Void> authorization(@Body UserDto user);
 
-    @GET("/user/{id}")
-    Call<User> getById(@Path("id") int id);
-
-    @POST("/user/authorization/")
-    Call<String> authorization(@Body User user);
-
-    @POST("/user/registration/")
-    Call<String> registration(@Body User user);
+    @POST("/user/reg/")
+    Call<Void> registration(@Body UserDto user);
 }

@@ -19,7 +19,7 @@ public class RegisterDialog extends Dialog {
     public RegisterDialog(LoginActivity loginActivity) {
         super(loginActivity);
         this.loginActivity = loginActivity;
-
+        setCanceledOnTouchOutside(false);
     }
 
     private Button cancel, confirm;
@@ -36,11 +36,13 @@ public class RegisterDialog extends Dialog {
             @Override
             public void onClick(View view) {
                 loginActivity.doRegister();
+                dismiss();
             }
         });
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                loginActivity.getProgressBar().setVisibility(View.INVISIBLE);
                 dismiss();
             }
         });
