@@ -22,7 +22,13 @@ import com.google.android.gms.location.LocationListener;
 import com.letit0or1.androidworldhistorytracker.R;
 import com.letit0or1.androidworldhistorytracker.entity.Event;
 import com.letit0or1.androidworldhistorytracker.entity.EventDto;
+import com.letit0or1.androidworldhistorytracker.view.TokenUtil;
+import com.letit0or1.androidworldhistorytracker.view.login.LoginActivity;
 import com.letit0or1.androidworldhistorytracker.webapp.factory.ServicesFactory;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AddEventActivity extends Activity {
 
@@ -42,10 +48,23 @@ public class AddEventActivity extends Activity {
             public void onClick(View view) {
                 currentBestLocation = getLastBestLocation();
                 try {
-                    ServicesFactory.getInstance().getEventService().add(new EventDto(editText.getText().toString(), currentBestLocation.getLongitude(), currentBestLocation.getLatitude()));
-                    Toast.makeText(getApplicationContext(), "lon: "+currentBestLocation.getLongitude()+"\ntal: "+currentBestLocation.getLatitude(), Toast.LENGTH_LONG).show();
+                    ServicesFactory.getInstance().getEventService().add(
+                            new EventDto(
+                                    editText.getText().toString(),
+                                    currentBestLocation.getLongitude(),
+                                    currentBestLocation.getLatitude()),
+                            TokenUtil.getToken(getApplicationContext())).enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            finish();
+                        }
 
-                    finish();
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            finish();
+                        }
+                    });
+                    Toast.makeText(getApplicationContext(), "lon: " + currentBestLocation.getLongitude() + "\nlat: " + currentBestLocation.getLatitude(), Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     Toast.makeText(getApplicationContext(), "No location detected. Try again;", Toast.LENGTH_LONG).show();
                 }

@@ -1,7 +1,5 @@
 package com.letit0or1.androidworldhistorytracker.entity;
 
-import android.graphics.PointF;
-
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -26,26 +24,26 @@ public class Event {
     private double longitude;
 
     @DatabaseField
-    private Timestamp dateTime;
+    private Timestamp createDate;
 
 
     public Event() {
     }
 
-    public Event(int id, int user_id, String content, double latitude, double longitude, Timestamp dateTime) {
+    public Event(int id, int user_id, String content, double latitude, double longitude, Timestamp createDate) {
         this.id = id;
         this.user_id = user_id;
         this.content = content;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.dateTime = dateTime;
+        this.createDate = createDate;
     }
 
-    public Event(String content, double latitude, double longitude, Timestamp dateTime) {
+    public Event(String content, double latitude, double longitude, Timestamp createDate) {
         this.content = content;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.dateTime = dateTime;
+        this.createDate = createDate;
     }
 
     public int getId() {
@@ -68,8 +66,8 @@ public class Event {
         return longitude;
     }
 
-    public Timestamp getDateTime() {
-        return dateTime;
+    public Timestamp getCreateDate() {
+        return createDate;
     }
 
     public void setId(int id) {
@@ -92,7 +90,7 @@ public class Event {
         this.longitude = longitude;
     }
 
-    public void setDateTime(Timestamp dateTime) {
-        this.dateTime = dateTime;
+    public void setCreateDate(Timestamp createDate) {
+        this.createDate = createDate;
     }
 }

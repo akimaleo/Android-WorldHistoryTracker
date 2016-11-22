@@ -10,7 +10,8 @@
     <RelativeLayout
         android:id="@+id/mapF"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar">
 
         <fragment xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/map"
@@ -28,7 +29,8 @@
             android:id="@+id/radius"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1 km" />
+            android:text="1 km"
+            android:textColor="@color/textMain" />
 
         <SeekBar
             android:id="@+id/seek_bar_radius"
@@ -41,13 +43,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:text="From:14:50 1996.11.11\nTo:     14:50 1996.11.12" />
+            android:text="From:14:50 1996.11.11\nTo:     14:50 1996.11.12"
+            android:textColor="@color/textMain" />
     </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
         android:background="@android:color/white"
         android:scrollbars="vertical"
         android:visibility="invisible" />
@@ -62,4 +66,28 @@
         android:rotation="45"
         android:src="@drawable/ic_clear_black_24dp"
         app:fabSize="normal" />
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary">
+
+        <ImageButton
+            android:id="@+id/back_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:rotation="180"
+            android:src="@drawable/ic_arrow_back" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:text="Header"
+            android:textColor="@color/textMain"
+            android:textSize="20sp" />
+    </android.support.v7.widget.Toolbar>
 </RelativeLayout>

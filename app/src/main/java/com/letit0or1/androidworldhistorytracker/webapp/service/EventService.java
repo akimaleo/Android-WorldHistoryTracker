@@ -1,5 +1,7 @@
 package com.letit0or1.androidworldhistorytracker.webapp.service;
 
+import android.content.Context;
+
 import com.letit0or1.androidworldhistorytracker.entity.EventDto;
 import com.letit0or1.androidworldhistorytracker.entity.EventSearchDto;
 import com.letit0or1.androidworldhistorytracker.webapp.api.EventApi;
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.HEAD;
 import retrofit2.http.Path;
 
 /**
@@ -17,7 +20,6 @@ import retrofit2.http.Path;
  */
 
 public class EventService implements EventApi {
-
     @Override
     public Call<ArrayList<Event>> userEvents(@Body String token) {
         EventApi eApi = ServicesFactory.getRetrofit().create(EventApi.class);
@@ -28,12 +30,13 @@ public class EventService implements EventApi {
     @Override
     public Call<ArrayList<Event>> eventsByParams(@Body EventSearchDto e) {
         EventApi eApi = ServicesFactory.getRetrofit().create(EventApi.class);
+        e.setRadius(e.getRadius());//from radius in KM to radius in LnLon
         return eApi.eventsByParams(e);
     }
 
     @Override
-    public Call<Void> add(@Body EventDto e) {
+    public Call<Void> add(@Body EventDto e, String token) {
         EventApi eApi = ServicesFactory.getRetrofit().create(EventApi.class);
-        return eApi.add(e);
+        return eApi.add(e, token);
     }
 }

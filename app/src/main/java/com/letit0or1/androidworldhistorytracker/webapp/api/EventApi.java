@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.HEAD;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -21,9 +23,9 @@ public interface EventApi {
     @GET("/user/{id}/events/")
     Call<ArrayList<Event>> userEvents(@Body String token);
 
-    @GET("/events/")
+    @POST("/events/with_location/")
     Call<ArrayList<Event>> eventsByParams(@Body EventSearchDto e);
 
-    @POST("/event/add/")
-    Call<Void> add(@Body EventDto e);
+    @POST("/events/create/")
+    Call<Void> add(@Body EventDto e, @Header("Authorization") String token );
 }

@@ -43,7 +43,7 @@ public class EventsListAdapter extends RecyclerView.Adapter<EventsListAdapter.Vi
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         holder.mTextDescription.setText(mDataset.get(position).getContent());
-        holder.mTextTime.setText(mDataset.get(position).getDateTime().toString());
+        holder.mTextTime.setText(mDataset.get(position).getCreateDate().toString());
 
     }
 

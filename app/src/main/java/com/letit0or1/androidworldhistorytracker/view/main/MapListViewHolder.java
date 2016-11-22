@@ -20,12 +20,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -39,14 +41,22 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.letit0or1.androidworldhistorytracker.R;
 import com.letit0or1.androidworldhistorytracker.entity.Event;
+import com.letit0or1.androidworldhistorytracker.entity.EventSearchDto;
 import com.letit0or1.androidworldhistorytracker.view.main.utils.EventsListAdapter;
+import com.letit0or1.androidworldhistorytracker.webapp.factory.ServicesFactory;
+import com.letit0or1.androidworldhistorytracker.webapp.service.EventService;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCallback, DatePickerDialog.OnDateSetListener {
 
@@ -57,35 +67,52 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
     private GoogleMap mMap;
     private SupportMapFragment mapFragment;
 
-    private ActionBar mActionBar;
+    //    private ActionBar mActionBar;
     private Drawable upArrow;
 
     private boolean isAnimated = false;
     private Circle circle;
-
+    CircleOptions c;
+    //toolbar
+    private TextView title;
+    private ImageButton arrow_button;
 
     private SeekBar seekRadius;
     private TextView radiusText;
     private TextView timeFilter;
     private FloatingActionButton floatingActionButton;
 
+    private Timestamp from, to;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_list_view_holder);
 
+
+        from = new Timestamp(0);
+        to = new Timestamp(2017, 1, 1, 1, 1, 1, 1);
+
+
         timeFilter = (TextView) findViewById(R.id.filter_calendar);
-        mActionBar = getSupportActionBar();
+//        mActionBar = getSupportActionBar();
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         floatingActionButton = (FloatingActionButton) findViewById(R.id.floatingActionButton);
 
         upArrow = getResources().getDrawable(R.drawable.ic_arrow_back);
         upArrow.setColorFilter(getResources().getColor(R.color.actionbarTransparent), PorterDuff.Mode.SRC_ATOP);
-        mActionBar.setHomeAsUpIndicator(upArrow);
-        mActionBar.setDisplayHomeAsUpEnabled(true);
+//        mActionBar.setHomeAsUpIndicator(upArrow);
+//        mActionBar.setDisplayHomeAsUpEnabled(true);
 
         recyclerView.setHasFixedSize(true);
-        mLayoutManager = new StaggeredGridLayoutManager(2, getResources().getConfiguration().orientation);
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mLayoutManager = new StaggeredGridLayoutManager(2, Configuration.ORIENTATION_PORTRAIT);
+        } else {
+            mLayoutManager = new StaggeredGridLayoutManager(4, Configuration.ORIENTATION_PORTRAIT);
+        }
+//        mLayoutManager = new StaggeredGridLayoutManager(2, getResources().getConfiguration().orientation);
         recyclerView.setLayoutManager(mLayoutManager);
 
 
@@ -97,7 +124,87 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission Granted
+                    Intent intent = new Intent(getApplicationContext(), AddEventActivity.class);
+                    startActivity(intent);
+                } else {
+                    // Permission Denied
+                    Toast.makeText(getApplicationContext(), "No permission granted", Toast.LENGTH_LONG);
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth, int yearEnd, int monthOfYearEnd, int dayOfMonthEnd) {
+        timeFilter.setText("From: " + dayOfMonth + "." + monthOfYear + "." + year + "\nTo:      " + dayOfMonthEnd + "." + monthOfYearEnd + "." + yearEnd);
+
+        from = new Timestamp(year, monthOfYear, dayOfMonth, 0, 0, 0, 0);
+        to = new Timestamp(yearEnd, monthOfYearEnd, dayOfMonthEnd, 0, 0, 0, 0);
+        drawEvents();
+    }
+
+    //Dialogs
+    void showCalendarDialogListener() {
+        Calendar now = Calendar.getInstance();
+        DatePickerDialog dpd = DatePickerDialog.newInstance(
+                MapListViewHolder.this,
+                now.get(Calendar.YEAR),
+                now.get(Calendar.MONTH),
+                now.get(Calendar.DAY_OF_MONTH)
+        );
+        dpd.show(getFragmentManager(), "Datepickerdialog");
+    }
+
+    void goAddEvent() {
+        int permissionCheck = ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION);
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(getApplicationContext(), AddEventActivity.class);
+            startActivity(intent);
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+
+        }
+    }
+
+    //Map
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                c = new CircleOptions();
+                c.center(latLng);
+                c.fillColor(Color.argb(8, 0, 0, 0));
+                c.radius(seekRadius.getProgress() * 1000);
+                if (circle != null)
+                    circle.remove();
+                circle = mMap.addCircle(c);
+                drawEvents();
+            }
+        });
+
+        // Add a marker in Sydney and move the camera
+    }
+
     void init() {
+        title = (TextView) findViewById(R.id.title);
+        arrow_button = (ImageButton) findViewById(R.id.back_arrow);
+        arrow_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onSwap();
+            }
+        });
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,6 +227,7 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
         });
         radiusText = (TextView) findViewById(R.id.radius);
         seekRadius = (SeekBar) findViewById(R.id.seek_bar_radius);
+        seekRadius.setProgress(70);
         seekRadius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -135,93 +243,80 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                drawEvents();
             }
         });
-
-        ArrayList<Event> a = new ArrayList<>();
-        a.add(new Event("Such a long. Event description. Such a long. Event description. Such a long. Event description.", 49.504f, 024.54f, new Timestamp(2016, 11, 21, 5, 5, 5, 0)));
-        a.add(new Event("Such a long. Event description.", 49.504f, 024.54f, new Timestamp(1)));
-        a.add(new Event("Such a long. Event description. Event description. Such a long. Event description.", 49.504f, 024.54f, new Timestamp(2016, 11, 21, 5, 5, 5, 0)));
-        a.add(new Event("Such a long. Event description. Such a long. Event description. Such a long. Event description.", 49.504f, 024.54f, new Timestamp(2016, 11, 21, 5, 5, 5, 0)));
-        a.add(new Event("Such a long. Event description. Such a long. Event description. Such a long. Event description.", 49.504f, 024.54f, new Timestamp(2016, 11, 21, 5, 5, 5, 0)));
-
-        mAdapter = new EventsListAdapter(a);
-        recyclerView.setAdapter(mAdapter);
-        if (mAdapter.getItemCount() == 0) {
-
-        }
     }
 
-    void goAddEvent() {
-        int permissionCheck = ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION);
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-            Intent intent = new Intent(getApplicationContext(), AddEventActivity.class);
-            startActivity(intent);
-        } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+    void drawEvents() {
 
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case 1:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // Permission Granted
-                    Intent intent = new Intent(getApplicationContext(), AddEventActivity.class);
-                    startActivity(intent);
-                } else {
-                    // Permission Denied
-                    Toast.makeText(getApplicationContext(), "No permission granted", Toast.LENGTH_LONG);
+        if (circle != null) {
+            mMap.clear();
+            mMap.addCircle(c);
+            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    marker.showInfoWindow();
+                    return true;
                 }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            });
+            ServicesFactory.getInstance().getEventService().eventsByParams(
+                    new EventSearchDto(circle.getCenter().latitude, circle.getCenter().longitude, seekRadius.getProgress(), from, to))
+                    .enqueue(new Callback<ArrayList<Event>>() {
+                        @Override
+                        public void onResponse(Call<ArrayList<Event>> call, Response<ArrayList<Event>> response) {
+
+                            if (response.body() != null) {
+                                setAllEvents(response.body());
+                            } else
+                                Log.e("GET EVENTS", "NULL EVENTS");
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<ArrayList<Event>> call, Throwable t) {
+                            Toast.makeText(getApplicationContext(), "oopsi", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         }
     }
 
-    void showCalendarDialogListener() {
-        Calendar now = Calendar.getInstance();
-        DatePickerDialog dpd = DatePickerDialog.newInstance(
-                MapListViewHolder.this,
-                now.get(Calendar.YEAR),
-                now.get(Calendar.MONTH),
-                now.get(Calendar.DAY_OF_MONTH)
-        );
-        dpd.show(getFragmentManager(), "Datepickerdialog");
+    private void setAllEvents(ArrayList<Event> events) {
+        Log.e("DRAW EVENTS", "EVENTS COUNT: " + events.size());
+
+        for (int i = 0; i < events.size(); i++) {
+            MarkerOptions curMarker = new MarkerOptions();
+            curMarker.draggable(false);
+            curMarker.position(new LatLng(events.get(i).getLatitude(), events.get(i).getLongitude()));
+            curMarker.title(events.get(i).getContent());
+            mMap.addMarker(curMarker);
+        }
+        mAdapter = new EventsListAdapter(events);
+        recyclerView.setAdapter(mAdapter);
     }
 
-    @Override
-    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth, int yearEnd, int monthOfYearEnd, int dayOfMonthEnd) {
-        timeFilter.setText("From: " + dayOfMonth + "." + monthOfYear + "." + year + "\nTo:      " + dayOfMonthEnd + "." + monthOfYearEnd + "." + yearEnd);
-    }
 
-
+    //Swap list and map
     void setMap() {
         circularAnimHide(recyclerView);
-        mActionBar.setTitle("Tap on map");
-//        mActionBar.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(this, R.color.actionbarTansparant)));
+        title.setText("Tap on map and change radius");
 
     }
 
     void setList() {
         circularAnimShow(recyclerView);
-        mActionBar.setTitle("Event list");
+        title.setText("List of events");
     }
 
-
-    void onSwap(View item) {
+    void onSwap() {
         if (isAnimated)
             return;
+
         boolean isList = recyclerView.getVisibility() == View.VISIBLE; //viewFlipper.getCurrentView() instanceof RecyclerView;
         if (isList) {
             setMap();
             Animation rotation = AnimationUtils.loadAnimation(this, R.anim.arrow_anim_to_left);
-            if (item != null)
-                item.startAnimation(rotation);
+            arrow_button.startAnimation(rotation);
 //            item.getActionView()
 //                    .getRootView()
 //                    .animate()
@@ -231,9 +326,8 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
 //                    .start();
         } else {
             setList();
-            Animation rotation = AnimationUtils.loadAnimation(this, R.anim.arrow_anim_to_left);
-            if (item != null)
-                item.startAnimation(rotation);
+            Animation rotation = AnimationUtils.loadAnimation(this, R.anim.arrow_anim_to_right);
+            arrow_button.startAnimation(rotation);
 //            item.getActionView()
 //                    .animate()
 //                    .setDuration(200)
@@ -241,28 +335,6 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
 //                    .rotation(0)
 //                    .start();
         }
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                CircleOptions c = new CircleOptions();
-                c.center(latLng);
-                c.fillColor(Color.argb(8, 0, 0, 0));
-                c.radius(seekRadius.getProgress() * 1000);
-                if (circle != null)
-                    circle.remove();
-                circle = mMap.addCircle(c);
-            }
-        });
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     private void circularAnimShow(View showView) {
@@ -331,22 +403,7 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-//                item.setActionView(R.layout.arrow_back_action);
-                onSwap(item.getActionView());
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+    public void onBackPressed() {
+        onSwap();
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-//        menu.getItem(R.id.).setActionView(R.layout.arrow_back_action);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
 }
