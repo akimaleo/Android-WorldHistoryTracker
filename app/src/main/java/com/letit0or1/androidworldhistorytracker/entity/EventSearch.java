@@ -6,7 +6,7 @@ import java.sql.Timestamp;
  * Created by akimaleo on 18.11.16.
  */
 
-public class EventSearchDto {
+public class EventSearch {
     double latitude;
     double longitude;
     int radius;
@@ -14,7 +14,7 @@ public class EventSearchDto {
     Timestamp from;
     Timestamp to;
 
-    public EventSearchDto(double latitude, double longitude, int radius, Timestamp from, Timestamp to) {
+    public EventSearch(double latitude, double longitude, int radius, Timestamp from, Timestamp to) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.radius = radius;
@@ -22,7 +22,7 @@ public class EventSearchDto {
         this.to = to;
     }
 
-    //    public EventSearchDto(double longitude, double latitude, int radius, Timestamp from, Timestamp to) {
+    //    public EventSearch(double longitude, double latitude, int radius, Timestamp from, Timestamp to) {
 //        this.longitude = longitude;
 //        this.latitude = latitude;
 //        this.radius = radius;
@@ -30,7 +30,7 @@ public class EventSearchDto {
 //        this.to = to;
 //    }
 
-    public EventSearchDto(double longitude, double latitude, Timestamp from, Timestamp to) {
+    public EventSearch(double longitude, double latitude, Timestamp from, Timestamp to) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.from = from;

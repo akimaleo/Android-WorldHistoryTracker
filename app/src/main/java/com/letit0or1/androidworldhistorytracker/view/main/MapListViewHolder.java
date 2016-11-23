@@ -8,33 +8,27 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.borax12.materialdaterangepicker.date.DatePickerDialog;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -44,11 +38,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.letit0or1.androidworldhistorytracker.R;
-import com.letit0or1.androidworldhistorytracker.entity.Event;
-import com.letit0or1.androidworldhistorytracker.entity.EventSearchDto;
+import com.letit0or1.androidworldhistorytracker.entity.EventIn;
+import com.letit0or1.androidworldhistorytracker.entity.EventSearch;
 import com.letit0or1.androidworldhistorytracker.view.main.utils.EventsListAdapter;
 import com.letit0or1.androidworldhistorytracker.webapp.factory.ServicesFactory;
-import com.letit0or1.androidworldhistorytracker.webapp.service.EventService;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -63,6 +56,7 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private ArrayList<EventIn> dataset;
 
     private GoogleMap mMap;
     private SupportMapFragment mapFragment;
@@ -90,10 +84,8 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_list_view_holder);
 
-
         from = new Timestamp(0);
         to = new Timestamp(2017, 1, 1, 1, 1, 1, 1);
-
 
         timeFilter = (TextView) findViewById(R.id.filter_calendar);
 //        mActionBar = getSupportActionBar();
@@ -114,7 +106,9 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
         }
 //        mLayoutManager = new StaggeredGridLayoutManager(2, getResources().getConfiguration().orientation);
         recyclerView.setLayoutManager(mLayoutManager);
-
+        dataset = new ArrayList<EventIn>();
+        mAdapter = new EventsListAdapter(dataset);
+        recyclerView.setAdapter(mAdapter);
 
 //        map
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -146,8 +140,8 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth, int yearEnd, int monthOfYearEnd, int dayOfMonthEnd) {
         timeFilter.setText("From: " + dayOfMonth + "." + monthOfYear + "." + year + "\nTo:      " + dayOfMonthEnd + "." + monthOfYearEnd + "." + yearEnd);
 
-        from = new Timestamp(year, monthOfYear, dayOfMonth, 0, 0, 0, 0);
-        to = new Timestamp(yearEnd, monthOfYearEnd, dayOfMonthEnd, 0, 0, 0, 0);
+        from = new Timestamp(year - 1900, monthOfYear, dayOfMonth, 0, 0, 0, 0);
+        to = new Timestamp(yearEnd - 1900, monthOfYearEnd, dayOfMonthEnd, 23, 59, 59, 0);
         drawEvents();
     }
 
@@ -192,8 +186,6 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
                 drawEvents();
             }
         });
-
-        // Add a marker in Sydney and move the camera
     }
 
     void init() {
@@ -217,15 +209,8 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
                 showCalendarDialogListener();
             }
         });
-        recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                v.removeOnLayoutChangeListener(this);
-                setList();
-            }
-        });
         radiusText = (TextView) findViewById(R.id.radius);
+        radiusText.setText("70");
         seekRadius = (SeekBar) findViewById(R.id.seek_bar_radius);
         seekRadius.setProgress(70);
         seekRadius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -252,7 +237,7 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
 
         if (circle != null) {
             mMap.clear();
-            mMap.addCircle(c);
+            circle = mMap.addCircle(c);
             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(Marker marker) {
@@ -260,41 +245,40 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
                     return true;
                 }
             });
+
             ServicesFactory.getInstance().getEventService().eventsByParams(
-                    new EventSearchDto(circle.getCenter().latitude, circle.getCenter().longitude, seekRadius.getProgress(), from, to))
-                    .enqueue(new Callback<ArrayList<Event>>() {
+                    new EventSearch(circle.getCenter().latitude, circle.getCenter().longitude, seekRadius.getProgress(), from, to))
+                    .enqueue(new Callback<ArrayList<EventIn>>() {
                         @Override
-                        public void onResponse(Call<ArrayList<Event>> call, Response<ArrayList<Event>> response) {
+                        public void onResponse(Call<ArrayList<EventIn>> call, Response<ArrayList<EventIn>> response) {
 
                             if (response.body() != null) {
                                 setAllEvents(response.body());
                             } else
                                 Log.e("GET EVENTS", "NULL EVENTS");
-
                         }
 
                         @Override
-                        public void onFailure(Call<ArrayList<Event>> call, Throwable t) {
+                        public void onFailure(Call<ArrayList<EventIn>> call, Throwable t) {
                             Toast.makeText(getApplicationContext(), "oopsi", Toast.LENGTH_SHORT).show();
                         }
                     });
         }
     }
 
-    private void setAllEvents(ArrayList<Event> events) {
+    private void setAllEvents(ArrayList<EventIn> events) {
         Log.e("DRAW EVENTS", "EVENTS COUNT: " + events.size());
 
         for (int i = 0; i < events.size(); i++) {
+            Log.i("EVENT NAME: ", events.get(i).getEventName());
             MarkerOptions curMarker = new MarkerOptions();
             curMarker.draggable(false);
             curMarker.position(new LatLng(events.get(i).getLatitude(), events.get(i).getLongitude()));
-            curMarker.title(events.get(i).getContent());
+            curMarker.title(events.get(i).getEventName());
             mMap.addMarker(curMarker);
         }
-        mAdapter = new EventsListAdapter(events);
-        recyclerView.setAdapter(mAdapter);
-    }
 
+    }
 
     //Swap list and map
     void setMap() {

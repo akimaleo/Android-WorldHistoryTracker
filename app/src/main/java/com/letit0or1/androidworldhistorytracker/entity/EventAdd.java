@@ -1,16 +1,16 @@
 package com.letit0or1.androidworldhistorytracker.entity;
 
 /**
- * Created by akimaleo on 18.11.16.
+ * Created by akimaleo on 23.11.16.
  */
 
-public class EventDto {
-    String content;
+public class EventAdd {
+    String eventName;
     double longitude;
     double latitude;
 
-    public EventDto(String content, double longitude, double latitude) {
-        this.content = content;
+    public EventAdd(String content, double longitude, double latitude) {
+        this.eventName = content;
         this.longitude = longitude;
         this.latitude = latitude;
     }
