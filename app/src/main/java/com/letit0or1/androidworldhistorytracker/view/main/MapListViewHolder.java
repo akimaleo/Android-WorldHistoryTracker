@@ -114,6 +114,7 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
         init();
 
     }
@@ -271,13 +272,16 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
 
         for (int i = 0; i < events.size(); i++) {
             Log.i("EVENT NAME: ", events.get(i).getEventName());
+            Log.i("EVENT TIME: ", events.get(i).getCreateDate().toString());
             MarkerOptions curMarker = new MarkerOptions();
             curMarker.draggable(false);
             curMarker.position(new LatLng(events.get(i).getLatitude(), events.get(i).getLongitude()));
             curMarker.title(events.get(i).getEventName());
             mMap.addMarker(curMarker);
         }
-
+        dataset.clear();
+        dataset.addAll(events);
+        mAdapter.notifyDataSetChanged();
     }
 
     //Swap list and map

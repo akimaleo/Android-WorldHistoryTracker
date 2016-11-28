@@ -2,6 +2,7 @@ package com.letit0or1.androidworldhistorytracker.webapp.factory;
 
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.letit0or1.androidworldhistorytracker.R;
 import com.letit0or1.androidworldhistorytracker.webapp.service.EventService;
@@ -17,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by akimaleo on 13.11.16.
  */
 public class ServicesFactory {
-    private static String URL = "http://192.168.0.114:4567";
+    private static String URL = "http://10.42.0.101:4567";
     private static ServicesFactory apiFactory = new ServicesFactory();
     private static Retrofit retrofit;
     private static final int CONNECT_TIMEOUT = 15;
@@ -31,7 +32,8 @@ public class ServicesFactory {
         b.writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS);
         b.readTimeout(READ_TIMEOUT, TimeUnit.SECONDS);
         CLIENT = b.build();
-//        URL = "http://" + Resources.getSystem().getString(R.string.server_url) + ":" + Resources.getSystem().getString(R.string.server_port);
+
+////        URL = "http://" + Resources.getSystem().getString(R.string.server_url) + ":" + Resources.getSystem().getString(R.string.server_port);
     }
 
     public static ServicesFactory getInstance() {
@@ -42,6 +44,7 @@ public class ServicesFactory {
 
     @NonNull
     public static Retrofit getRetrofit() {
+        Log.i("RETROFIT", URL);
         if (retrofit != null)
             return retrofit;
         return retrofit = new Retrofit.Builder()

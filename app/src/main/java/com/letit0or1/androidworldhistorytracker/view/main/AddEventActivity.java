@@ -3,11 +3,13 @@ package com.letit0or1.androidworldhistorytracker.view.main;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,6 +19,7 @@ import com.letit0or1.androidworldhistorytracker.R;
 import com.letit0or1.androidworldhistorytracker.entity.EventAdd;
 import com.letit0or1.androidworldhistorytracker.entity.EventSearch;
 import com.letit0or1.androidworldhistorytracker.view.TokenUtil;
+import com.letit0or1.androidworldhistorytracker.view.login.LoginActivity;
 import com.letit0or1.androidworldhistorytracker.webapp.factory.ServicesFactory;
 
 import retrofit2.Call;
@@ -41,6 +44,7 @@ public class AddEventActivity extends Activity {
             public void onClick(View view) {
                 currentBestLocation = getLastBestLocation();
                 try {
+                    Log.e("TOKEN", TokenUtil.getToken(getApplicationContext()));
                     ServicesFactory.getInstance().getEventService().add(
                             new EventAdd(
                                     editText.getText().toString(),
@@ -49,6 +53,12 @@ public class AddEventActivity extends Activity {
                             TokenUtil.getToken(getApplicationContext())).enqueue(new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
+                            if (response.body().toString().contains("404")) {
+                                TokenUtil.setToken(getApplicationContext(), "none");
+                                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                            }
                             finish();
                         }
 

@@ -27,13 +27,13 @@ public class TokenUtil {
 
     public static String getUsername(Context context) {
         SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(context);
-        return sPref.getString("token", "none");
+        return sPref.getString("username", "none");
     }
 
     public static void setUsername(Context context, String username) {
         SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor ed = sPref.edit();
-        ed.putString("token", username);
+        ed.putString("username", username);
         ed.commit();
     }
 

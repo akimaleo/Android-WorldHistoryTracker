@@ -6,7 +6,6 @@
     <color name="textMain">#808080</color>
     <color name="separator">#dedede</color>
     <color name="transparentMenu">#27ffffff</color>
-    <color name="textTitle">#cccccc</color>
     <color name="actionbarTransparent">@color/colorPrimaryDark</color>
     <!-- The Color of the Status bar -->
 </resources>

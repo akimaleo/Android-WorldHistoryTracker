@@ -28,10 +28,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * A login screen that offers login via email/password.
- */
-
 public class LoginActivity extends AppCompatActivity {
 
     private Button loginButton;
@@ -48,23 +44,14 @@ public class LoginActivity extends AppCompatActivity {
         usernameField = (AutoCompleteTextView) findViewById(R.id.username);
         passwordField = (EditText) findViewById(R.id.password);
         loginButton = (Button) findViewById(R.id.email_sign_in_button);
-        loginButton.setOnLongClickListener(new View.OnLongClickListener() {
+        loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, MapListViewHolder.class);
-                startActivity(intent);
+            public void onClick(View view) {
                 View e = LoginActivity.this.getCurrentFocus();
                 if (e != null) {
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
-                return false;
-            }
-        });
-
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
                 doLogin();
             }
         });
@@ -76,9 +63,28 @@ public class LoginActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         String token = loadToken();
         if (token.contains("none") || token.isEmpty()) {
-            progressBar.setVisibility(View.INVISIBLE);
+            ServicesFactory.getInstance().getUserService().check(TokenUtil.getToken(getApplicationContext())).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if (response.body().contains("404")) {
+                        TokenUtil.setToken(getApplicationContext(), "none");
+                        progressBar.setVisibility(View.INVISIBLE);
+                        return;
+                    }
+                    goMainApp();
+
+                    progressBar.setVisibility(View.INVISIBLE);
+
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    progressBar.setVisibility(View.INVISIBLE);
+
+                }
+            });
         } else {
-            goMainApp();
+            progressBar.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -89,6 +95,7 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Some fields are empty, write something", Toast.LENGTH_LONG).show();
             return;
         }
+
         progressBar.setVisibility(View.VISIBLE);
         UserDto loginUser = new UserDto(usernameField.getText().toString(), passwordField.getText().toString());
         ServicesFactory.getInstance().getUserService().authorization(loginUser).enqueue(new Callback<Void>() {
@@ -109,6 +116,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Log.i("RESPONSE", "FAIL");
+                t.printStackTrace();
                 progressBar.setVisibility(View.GONE);
                 troubleDialog();
             }

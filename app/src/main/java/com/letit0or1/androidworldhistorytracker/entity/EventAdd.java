@@ -5,12 +5,13 @@ package com.letit0or1.androidworldhistorytracker.entity;
  */
 
 public class EventAdd {
-    String eventName;
-    double longitude;
-    double latitude;
+
+    private String content;
+    private double latitude;
+    private double longitude;
 
     public EventAdd(String content, double longitude, double latitude) {
-        this.eventName = content;
+        this.content = content;
         this.longitude = longitude;
         this.latitude = latitude;
     }
