@@ -22,7 +22,7 @@ public class TokenUtil {
         SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor ed = sPref.edit();
         ed.putString("token", token);
-        ed.commit();
+        ed.apply();
     }
 
     public static String getUsername(Context context) {
@@ -34,7 +34,7 @@ public class TokenUtil {
         SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor ed = sPref.edit();
         ed.putString("username", username);
-        ed.commit();
+        ed.apply();
     }
 
     private TokenUtil() {

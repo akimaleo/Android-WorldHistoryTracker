@@ -45,7 +45,11 @@
         <activity android:name=".view.main.MapListViewHolder" />
         <activity
             android:name=".view.main.AddEventActivity"
-            android:theme="@style/Theme.AppCompat.Dialog.Alert"></activity>
+            android:theme="@style/Theme.AppCompat.Dialog.Alert" />
+        <activity
+            android:name=".view.OwnEventsActivity"
+            android:label="@string/title_activity_own_events"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

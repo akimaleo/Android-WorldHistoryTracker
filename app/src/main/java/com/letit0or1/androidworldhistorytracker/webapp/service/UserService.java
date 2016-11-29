@@ -1,9 +1,12 @@
 package com.letit0or1.androidworldhistorytracker.webapp.service;
 
+import android.util.Log;
+
 import com.letit0or1.androidworldhistorytracker.entity.UserDto;
 import com.letit0or1.androidworldhistorytracker.webapp.api.UserApi;
 import com.letit0or1.androidworldhistorytracker.webapp.factory.ServicesFactory;
 
+import okhttp3.Response;
 import retrofit2.Call;
 import retrofit2.http.Header;
 
@@ -15,6 +18,7 @@ public class UserService implements UserApi {
 
     @Override
     public Call<String> check(@Header("Authorization") String token) {
+        Log.e("check token", token);
         UserApi eApi = ServicesFactory.getRetrofit().create(UserApi.class);
         Call<String> call = eApi.check(token);
         return call;

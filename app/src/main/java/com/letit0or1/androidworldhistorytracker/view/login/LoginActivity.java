@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -62,16 +63,23 @@ public class LoginActivity extends AppCompatActivity {
     public void checkAccessToken() {
         progressBar.setVisibility(View.VISIBLE);
         String token = loadToken();
+
         if (token.contains("none") || token.isEmpty()) {
+            progressBar.setVisibility(View.INVISIBLE);
+        } else {
             ServicesFactory.getInstance().getUserService().check(TokenUtil.getToken(getApplicationContext())).enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
-                    if (response.body().contains("404")) {
+
+                    String header = response.headers().get("authorization");
+                    if (header.contains("404")) {
                         TokenUtil.setToken(getApplicationContext(), "none");
                         progressBar.setVisibility(View.INVISIBLE);
                         return;
+                    } else {
+                        if (TokenUtil.getUsername(getApplicationContext()).equals(header))
+                            goMainApp();
                     }
-                    goMainApp();
 
                     progressBar.setVisibility(View.INVISIBLE);
 
@@ -79,12 +87,11 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-                    progressBar.setVisibility(View.INVISIBLE);
 
+                    progressBar.setVisibility(View.INVISIBLE);
+                    t.printStackTrace();
                 }
             });
-        } else {
-            progressBar.setVisibility(View.INVISIBLE);
         }
     }
 

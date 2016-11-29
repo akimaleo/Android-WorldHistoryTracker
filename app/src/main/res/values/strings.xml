@@ -10,5 +10,6 @@
     <!--Reg info-->
     <string name="reg_info">You aren`t user of WHT, do you want to use these data for registration?</string>
     <string name="got_it">Got it</string>
+    <string name="title_activity_own_events">OwnEventsActivity</string>
 
 </resources>

@@ -3,6 +3,7 @@ package com.letit0or1.androidworldhistorytracker.webapp.api;
 import com.letit0or1.androidworldhistorytracker.entity.User;
 import com.letit0or1.androidworldhistorytracker.entity.UserDto;
 
+import okhttp3.Response;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -15,8 +16,8 @@ import retrofit2.http.Path;
  */
 
 public interface UserApi {
-    @GET("/user/get_by_token/")
-    Call<String> check(@Header("Authorization") String token);
+    @GET("/user/check_token/")
+    Call<String> check(@Header("authorization") String token);
 
     @POST("/user/auth/")
     Call<Void> authorization(@Body UserDto user);

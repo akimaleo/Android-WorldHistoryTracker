@@ -73,21 +73,33 @@
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary">
 
-        <ImageButton
-            android:id="@+id/back_arrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:rotation="180"
-            android:src="@drawable/ic_arrow_back" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:text="Header"
-            android:textColor="@color/textMain"
-            android:textSize="20sp" />
+            <ImageButton
+                android:id="@+id/back_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_arrow_back" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:text="Header"
+                android:textColor="@color/textMain"
+                android:textSize="20sp" />
+
+            <ImageButton
+                android:id="@+id/my_events"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true" />
+        </RelativeLayout>
     </android.support.v7.widget.Toolbar>
 </RelativeLayout>
