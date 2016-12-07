@@ -67,17 +67,20 @@ public class LoginActivity extends AppCompatActivity {
         if (token.contains("none") || token.isEmpty()) {
             progressBar.setVisibility(View.INVISIBLE);
         } else {
-            ServicesFactory.getInstance().getUserService().check(TokenUtil.getToken(getApplicationContext())).enqueue(new Callback<String>() {
+            ServicesFactory.getInstance().getUserService().check(TokenUtil.getOurInstance().getToken()).enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
 
                     String header = response.headers().get("authorization");
+
                     if (header.contains("404")) {
-                        TokenUtil.setToken(getApplicationContext(), "none");
+
+                        TokenUtil.getOurInstance().setToken( "none");
                         progressBar.setVisibility(View.INVISIBLE);
                         return;
+
                     } else {
-                        if (TokenUtil.getUsername(getApplicationContext()).equals(header))
+                        if (TokenUtil.getOurInstance().getUsername().equals(header))
                             goMainApp();
                     }
 
@@ -171,12 +174,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     void saveToken(String text) {
-        TokenUtil.setToken(this, text);
-        TokenUtil.setUsername(this, usernameField.getText().toString());
+        TokenUtil.getOurInstance().setToken( text);
+        TokenUtil.getOurInstance().setUsername( usernameField.getText().toString());
     }
 
     String loadToken() {
-        return TokenUtil.getToken(this);
+        return TokenUtil.getOurInstance().getToken();
     }
 
     void goMainApp() {

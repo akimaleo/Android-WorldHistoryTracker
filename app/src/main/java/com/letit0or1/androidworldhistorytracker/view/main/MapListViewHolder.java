@@ -3,14 +3,12 @@ package com.letit0or1.androidworldhistorytracker.view.main;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -40,6 +38,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.letit0or1.androidworldhistorytracker.R;
 import com.letit0or1.androidworldhistorytracker.entity.EventIn;
 import com.letit0or1.androidworldhistorytracker.entity.EventSearch;
+import com.letit0or1.androidworldhistorytracker.view.myprofile.OwnEventsActivity;
 import com.letit0or1.androidworldhistorytracker.view.main.utils.EventsListAdapter;
 import com.letit0or1.androidworldhistorytracker.webapp.factory.ServicesFactory;
 
@@ -114,7 +113,13 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
+        findViewById(R.id.my_events).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MapListViewHolder.this, OwnEventsActivity.class);
+                startActivity(intent);
+            }
+        });
         init();
 
     }
@@ -287,7 +292,7 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
     //Swap list and map
     void setMap() {
         circularAnimHide(recyclerView);
-        title.setText("Tap on map and change radius");
+        title.setText("Tap the map");
 
     }
 
@@ -303,7 +308,7 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
         boolean isList = recyclerView.getVisibility() == View.VISIBLE; //viewFlipper.getCurrentView() instanceof RecyclerView;
         if (isList) {
             setMap();
-            Animation rotation = AnimationUtils.loadAnimation(this, R.anim.arrow_anim_to_left);
+            Animation rotation = AnimationUtils.loadAnimation(this, R.anim.arrow_anim_to_right);
             arrow_button.startAnimation(rotation);
 //            item.getActionView()
 //                    .getRootView()
@@ -314,7 +319,7 @@ public class MapListViewHolder extends AppCompatActivity implements OnMapReadyCa
 //                    .start();
         } else {
             setList();
-            Animation rotation = AnimationUtils.loadAnimation(this, R.anim.arrow_anim_to_right);
+            Animation rotation = AnimationUtils.loadAnimation(this, R.anim.arrow_anim_to_left);
             arrow_button.startAnimation(rotation);
 //            item.getActionView()
 //                    .animate()

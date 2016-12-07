@@ -10,17 +10,19 @@ import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.Header;
 
 /**
  * Created by akimaleo on 13.11.16.
  */
 
 public class EventService implements EventApi {
+
+
     @Override
-    public Call<ArrayList<EventIn>> userEvents(@Body String token) {
+    public Call<ArrayList<EventIn>> userEvents(@Header("Authorization") String token) {
         EventApi eApi = ServicesFactory.getRetrofit().create(EventApi.class);
-        Call<ArrayList<EventIn>> call = eApi.userEvents(token);
-        return call;
+        return eApi.userEvents(token);
     }
 
     @Override

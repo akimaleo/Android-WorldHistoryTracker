@@ -18,8 +18,8 @@ import retrofit2.http.POST;
 
 public interface EventApi {
 
-    @GET("/user/{id}/events/")
-    Call<ArrayList<EventIn>> userEvents(@Body String token);
+    @GET("/user/events_by_token/")
+    Call<ArrayList<EventIn>> userEvents(@Header("Authorization") String token);
 
     @POST("/events/with_location/")
     Call<ArrayList<EventIn>> eventsByParams(@Body EventSearch e);

@@ -18,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by akimaleo on 13.11.16.
  */
 public class ServicesFactory {
-    private static String URL = "http://192.168.1.6:4567";
+    private static String URL = "http://192.168.0.114:4567";
     private static ServicesFactory apiFactory = new ServicesFactory();
     private static Retrofit retrofit;
     private static final int CONNECT_TIMEOUT = 15;

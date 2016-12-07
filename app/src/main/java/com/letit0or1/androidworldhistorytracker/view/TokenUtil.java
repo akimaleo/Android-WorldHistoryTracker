@@ -12,25 +12,34 @@ import static android.content.Context.MODE_PRIVATE;
 public class TokenUtil {
 
     private static TokenUtil ourInstance = new TokenUtil();
+    private Context context;
 
-    public static String getToken(Context context) {
+    public String getToken() {
         SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(context);
         return sPref.getString("token", "none");
     }
 
-    public static void setToken(Context context, String token) {
+    public static TokenUtil getOurInstance() {
+        return ourInstance;
+    }
+
+    public void setToken(String token) {
         SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor ed = sPref.edit();
         ed.putString("token", token);
         ed.apply();
     }
 
-    public static String getUsername(Context context) {
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    public String getUsername() {
         SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(context);
         return sPref.getString("username", "none");
     }
 
-    public static void setUsername(Context context, String username) {
+    public void setUsername(String username) {
         SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor ed = sPref.edit();
         ed.putString("username", username);

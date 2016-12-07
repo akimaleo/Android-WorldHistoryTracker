@@ -9,13 +9,10 @@ import java.sql.Timestamp;
 public class Event {
 
     @DatabaseField
-    private int id;
+    private int eventId;
 
     @DatabaseField
-    private int user_id;
-
-    @DatabaseField
-    private String content;
+    private String eventName;
 
     @DatabaseField
     private double latitude;
@@ -26,36 +23,34 @@ public class Event {
     @DatabaseField
     private Timestamp createDate;
 
+    @DatabaseField
+    private int userId;
 
     public Event() {
     }
 
-    public Event(int id, int user_id, String content, double latitude, double longitude, Timestamp createDate) {
-        this.id = id;
-        this.user_id = user_id;
-        this.content = content;
+    public Event(String content, double latitude, double longitude, int userId) {
+        this.eventName = content;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.userId = userId;
+    }
+
+    public Event(int eventId, String eventName, double latitude, double longitude, Timestamp createDate, int userId) {
+        this.eventId = eventId;
+        this.eventName = eventName;
         this.latitude = latitude;
         this.longitude = longitude;
         this.createDate = createDate;
+        this.userId = userId;
     }
 
-    public Event(String content, double latitude, double longitude, Timestamp createDate) {
-        this.content = content;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.createDate = createDate;
+    public int getEventId() {
+        return eventId;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public int getUser_id() {
-        return user_id;
-    }
-
-    public String getContent() {
-        return content;
+    public String getEventName() {
+        return eventName;
     }
 
     public double getLatitude() {
@@ -70,16 +65,16 @@ public class Event {
         return createDate;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
     }
 
     public void setLatitude(double latitude) {
@@ -92,5 +87,9 @@ public class Event {
 
     public void setCreateDate(Timestamp createDate) {
         this.createDate = createDate;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

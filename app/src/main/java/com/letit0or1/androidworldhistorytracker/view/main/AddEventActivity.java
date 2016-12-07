@@ -44,17 +44,17 @@ public class AddEventActivity extends Activity {
             public void onClick(View view) {
                 currentBestLocation = getLastBestLocation();
                 try {
-                    Log.e("TOKEN", TokenUtil.getToken(getApplicationContext()));
+                    Log.e("TOKEN", TokenUtil.getOurInstance().getToken());
                     ServicesFactory.getInstance().getEventService().add(
                             new EventAdd(
                                     editText.getText().toString(),
                                     currentBestLocation.getLongitude(),
                                     currentBestLocation.getLatitude()),
-                            TokenUtil.getToken(getApplicationContext())).enqueue(new Callback<Void>() {
+                            TokenUtil.getOurInstance().getToken()).enqueue(new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
                             if (response.body().toString().contains("404")) {
-                                TokenUtil.setToken(getApplicationContext(), "none");
+                                TokenUtil.getOurInstance().setToken("none");
                                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);

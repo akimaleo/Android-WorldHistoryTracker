@@ -16,6 +16,7 @@
 
     <application
         android:allowBackup="true"
+        android:name=".Application"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -47,7 +48,7 @@
             android:name=".view.main.AddEventActivity"
             android:theme="@style/Theme.AppCompat.Dialog.Alert" />
         <activity
-            android:name=".view.OwnEventsActivity"
+            android:name=".view.myprofile.OwnEventsActivity"
             android:label="@string/title_activity_own_events"
             android:theme="@style/AppTheme"></activity>
     </application>

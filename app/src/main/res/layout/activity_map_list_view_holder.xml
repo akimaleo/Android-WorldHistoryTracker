@@ -70,8 +70,10 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary">
+        android:layout_height="58dp"
+        android:background="@color/colorPrimary"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -80,26 +82,33 @@
             <ImageButton
                 android:id="@+id/back_arrow"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:rotation="180"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_arrow_back" />
-
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="50dp"
-                android:text="Header"
-                android:textColor="@color/textMain"
-                android:textSize="20sp" />
 
             <ImageButton
                 android:id="@+id/my_events"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true" />
+                android:layout_alignParentTop="true"
+                android:background="@null"
+                android:src="@drawable/ic_account_circle_black_24dp" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="20dp"
+                android:layout_toEndOf="@+id/back_arrow"
+                android:layout_toRightOf="@+id/back_arrow"
+                android:gravity="center"
+                android:text="Header"
+                android:textColor="@color/textMain"
+                android:textSize="20sp" />
         </RelativeLayout>
     </android.support.v7.widget.Toolbar>
 </RelativeLayout>
